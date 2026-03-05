@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pendaftaran Santri – TPA Surau Balai Diateh Situmbuk</title>
+<link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --emerald: #0d5c3a;
+    --emerald-light: #1a7a4e;
+    --emerald-pale: #e8f5ee;
+    --gold: #c49a2a;
+    --gold-light: #f0c84a;
+    --cream: #faf8f3;
+    --dark: #1a1a1a;
+    --text: #2d3748;
+    --muted: #718096;
+    --border: #e2e8f0;
+    --white: #ffffff;
+    --red: #e53e3e;
+    --shadow: 0 4px 32px rgba(13,92,58,0.12);
+    --radius: 16px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    background: linear-gradient(160deg, #e8f5ee 0%, #faf8f3 50%, #fff9ec 100%);
+    min-height: 100vh;
+    color: var(--text);
+  }
+
+  /* ===== HEADER ===== */
+  .page-header {
+    background: linear-gradient(135deg, #0d5c3a 0%, #0a4a2e 55%, #072e1c 100%);
+    color: white;
+    padding: 0;
+    position: relative;
+    overflow: hidden;
+  }
+  .page-header::before {
+    content:''; position:absolute; top:-80px; right:-80px;
+    width:260px; height:260px;
+    background: radial-gradient(circle, rgba(196,154,42,0.20) 0%, transparent 70%);
+    border-radius:50%;
+  }
+  .page-header::after {
+    content:''; position:absolute; bottom:-50px; left:25%;
+    width:200px; height:200px;
+    background: radial-gradient(circle, rgba(255,255,255,0.05) 0%, transparent 70%);
+    border-radius:50%;
+  }
+  .header-inner {
+    display: flex; align-items: center; gap: 20px;
+    padding: 28px 40px;
+    position: relative; z-index: 1;
+  }
+  .logo-circle {
+    width: 80px; height: 80px; border-radius: 50%;
+    background: rgba(255,255,255,0.10);
+    border: 2px solid rgba(196,154,42,0.55);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 38px; flex-shrink: 0;
+  }
+  .header-text h1 {
+    font-family: 'Amiri', serif; font-size: 1.65rem; font-weight: 700; line-height: 1.2;
+  }
+  .header-text p { font-size: 0.78rem; color: rgba(255,255,255,0.68); margin-top: 4px; letter-spacing: 0.7px; text-transform: uppercase; }
+  .header-badge {
+    margin-left: auto;
+    background: rgba(196,154,42,0.22);
+    border: 1px solid rgba(196,154,42,0.55);
+    color: var(--gold-light);
+    padding: 7px 18px; border-radius: 99px;
+    font-size: 0.75rem; font-weight: 600; letter-spacing: 0.8px; white-space: nowrap;
+  }
+
+  /* ===== PROGRESS BAR ===== */
+  .progress-wrap {
+    background: white;
+    border-bottom: 1px solid var(--border);
+    padding: 0 40px;
+  }
+  .progress-steps {
+    display: flex; gap: 0; max-width: 700px; margin: 0 auto;
+  }
+  .step {
+    flex: 1; text-align: center; padding: 16px 8px;
+    position: relative; cursor: default;
+  }
+  .step::after {
+    content: ''; position: absolute;
+    top: 28px; right: -50%; width: 100%; height: 2px;
+    background: var(--border); z-index: 0;
+  }
+  .step:last-child::after { display: none; }
+  .step-num {
+    width: 30px; height: 30px; border-radius: 50%;
+    background: var(--border); color: var(--muted);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.8rem; font-weight: 700;
+    margin: 0 auto 6px; position: relative; z-index: 1;
+    transition: all 0.3s;
+  }
+  .step.active .step-num { background: var(--emerald); color: white; box-shadow: 0 0 0 4px var(--emerald-pale); }
+  .step.done .step-num { background: #38a169; color: white; }
+  .step-label { font-size: 0.72rem; font-weight: 600; color: var(--muted); }
+  .step.active .step-label { color: var(--emerald); }
+  .step.done .step-label { color: #38a169; }
+
+  /* ===== FORM WRAPPER ===== */
+  .form-wrapper {
+    max-width: 760px; margin: 40px auto; padding: 0 20px 60px;
+  }
+
+  .form-card {
+    background: white; border-radius: var(--radius);
+    box-shadow: var(--shadow); border: 1px solid var(--border);
+    overflow: hidden; margin-bottom: 20px;
+  }
+  .form-card-header {
+    padding: 20px 28px; border-bottom: 1px solid var(--border);
+    background: linear-gradient(90deg, var(--emerald-pale), white);
+    display: flex; align-items: center; gap: 12px;
+  }
+  .form-card-icon {
+    width: 40px; height: 40px; border-radius: 10px;
+    background: var(--emerald); color: white;
+    display: flex; align-items: center; justify-content: center; font-size: 1.1rem;
+    flex-shrink: 0;
+  }
+  .form-card-title { font-size: 1rem; font-weight: 700; color: var(--emerald); }
+  .form-card-sub { font-size: 0.75rem; color: var(--muted); margin-top: 2px; }
+  .form-card-body { padding: 28px; }
+
+  .form-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 18px; }
+  .form-group { display: flex; flex-direction: column; gap: 7px; }
+  .form-group.full { grid-column: 1 / -1; }
+  label { font-size: 0.8rem; font-weight: 600; color: var(--text); }
+  label .req { color: var(--red); margin-left: 2px; }
+  input, select, textarea {
+    padding: 11px 14px;
+    border: 1.5px solid var(--border); border-radius: 9px;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 0.875rem; color: var(--text); background: #fafaf9;
+    transition: all 0.2s; outline: none; width: 100%;
+  }
+  input:focus, select:focus, textarea:focus {
+    border-color: var(--emerald); background: white;
+    box-shadow: 0 0 0 3px rgba(13,92,58,0.08);
+  }
+  input.error { border-color: var(--red); }
+  .field-error { font-size: 0.72rem; color: var(--red); margin-top: 2px; display: none; }
+  .field-error.show { display: block; }
+  textarea { resize: vertical; min-height: 80px; }
+
+  /* Photo */
+  .photo-area {
+    border: 2px dashed var(--border); border-radius: var(--radius);
+    padding: 24px; text-align: center; cursor: pointer;
+    transition: all 0.2s; background: #fafaf9; position: relative;
+  }
+  .photo-area:hover { border-color: var(--emerald); background: var(--emerald-pale); }
+  .photo-area input[type="file"] {
+    position: absolute; inset: 0; opacity: 0; cursor: pointer;
+    width: 100%; height: 100%; padding: 0; border: none; background: none;
+  }
+  .photo-preview { width: 100px; height: 120px; border-radius: 10px; object-fit: cover; border: 3px solid var(--emerald); margin: 0 auto 10px; display: block; }
+  .photo-placeholder { font-size: 3rem; margin-bottom: 10px; }
+  .photo-hint { font-size: 0.76rem; color: var(--muted); line-height: 1.5; }
+
+  /* Nav buttons */
+  .form-nav {
+    display: flex; gap: 12px; justify-content: space-between;
+    padding: 20px 28px; border-top: 1px solid var(--border); background: #fafafa;
+  }
+  .btn {
+    padding: 12px 26px; border-radius: 9px; border: none;
+    font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.875rem; font-weight: 600;
+    cursor: pointer; display: inline-flex; align-items: center; gap: 8px;
+    transition: all 0.2s;
+  }
+  .btn-primary { background: var(--emerald); color: white; }
+  .btn-primary:hover { background: var(--emerald-light); transform: translateY(-1px); box-shadow: 0 4px 16px rgba(13,92,58,0.28); }
+  .btn-secondary { background: white; color: var(--text); border: 1.5px solid var(--border); }
+  .btn-secondary:hover { border-color: var(--emerald); color: var(--emerald); }
+  .btn-submit { background: linear-gradient(135deg, var(--gold), #b8891e); color: white; font-size: 1rem; padding: 14px 36px; }
+  .btn-submit:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(196,154,42,0.35); }
+
+  /* Step panels */
+  .step-panel { display: none; }
+  .step-panel.active { display: block; }
+
+  /* Success screen */
+  .success-screen {
+    display: none; text-align: center; padding: 60px 40px;
+  }
+  .success-screen.show { display: block; }
+  .success-icon { font-size: 5rem; margin-bottom: 20px; animation: popIn 0.5s ease; }
+  @keyframes popIn { from { transform: scale(0); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+  .success-title { font-family: 'Amiri', serif; font-size: 1.8rem; color: var(--emerald); margin-bottom: 10px; }
+  .success-sub { color: var(--muted); font-size: 0.9rem; line-height: 1.6; max-width: 420px; margin: 0 auto 28px; }
+  .receipt-box {
+    background: var(--emerald-pale); border: 1px solid #b2d8c4;
+    border-radius: 12px; padding: 20px 24px; max-width: 420px;
+    margin: 0 auto 28px; text-align: left;
+  }
+  .receipt-row { display: flex; justify-content: space-between; padding: 6px 0; font-size: 0.85rem; border-bottom: 1px dashed #b2d8c4; }
+  .receipt-row:last-child { border-bottom: none; }
+  .receipt-key { color: var(--muted); font-weight: 500; }
+  .receipt-val { font-weight: 700; color: var(--emerald); }
+  .info-box {
+    background: #fffbeb; border: 1px solid #f6e05e; border-radius: 10px;
+    padding: 14px 18px; font-size: 0.82rem; color: #744210; margin-top: 16px;
+    display: flex; gap: 10px; align-items: flex-start; text-align: left;
+    max-width: 480px; margin-left: auto; margin-right: auto;
+  }
+
+  /* Review section */
+  .review-section { margin-bottom: 20px; }
+  .review-label { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px; color: var(--muted); margin-bottom: 10px; padding-bottom: 6px; border-bottom: 1px solid var(--border); }
+  .review-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+  .review-item { display: flex; flex-direction: column; gap: 2px; padding: 8px 0; }
+  .review-key { font-size: 0.72rem; color: var(--muted); font-weight: 500; }
+  .review-val { font-size: 0.875rem; color: var(--dark); font-weight: 600; }
+  .review-photo-wrap { display: flex; justify-content: center; margin-bottom: 16px; }
+  .review-photo { width: 90px; height: 110px; border-radius: 10px; object-fit: cover; border: 3px solid var(--emerald); }
+  .review-photo-placeholder { width: 90px; height: 110px; border-radius: 10px; background: var(--emerald-pale); display: flex; align-items: center; justify-content: center; font-size: 2.5rem; }
+
+  /* Terms */
+  .terms-box {
+    background: #f8fafc; border: 1px solid var(--border); border-radius: 10px;
+    padding: 16px 20px; font-size: 0.82rem; color: var(--text); line-height: 1.7;
+    max-height: 180px; overflow-y: auto; margin-bottom: 16px;
+  }
+  .terms-box h4 { color: var(--emerald); margin-bottom: 8px; font-size: 0.85rem; }
+  .terms-box ul { padding-left: 18px; }
+  .terms-box li { margin-bottom: 4px; }
+  .checkbox-group { display: flex; align-items: flex-start; gap: 10px; margin-top: 8px; }
+  .checkbox-group input[type="checkbox"] { width: 18px; height: 18px; margin-top: 2px; flex-shrink: 0; }
+  .checkbox-group label { font-size: 0.83rem; font-weight: 500; color: var(--text); cursor: pointer; }
+
+  @media (max-width: 600px) {
+    .header-inner { padding: 20px 20px; }
+    .progress-wrap { padding: 0 16px; }
+    .form-wrapper { padding: 0 12px 50px; }
+    .form-card-body { padding: 20px 18px; }
+    .form-grid { grid-template-columns: 1fr; }
+    .form-nav { padding: 16px 18px; flex-wrap: wrap; }
+    .review-grid { grid-template-columns: 1fr; }
+    .header-badge { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="page-header">
+  <div class="header-inner">
+    <div class="logo-circle">🕌</div>
+    <div class="header-text">
+      <h1>Surau Balai Diateh Situmbuk</h1>
+      <p>Formulir Pendaftaran Santri TPA</p>
+    </div>
+    <div class="header-badge">📝 Daftar Online</div>
+  </div>
+</div>
+
+<!-- PROGRESS -->
+<div class="progress-wrap">
+  <div class="progress-steps">
+    <div class="step active" id="pstep-1">
+      <div class="step-num">1</div>
+      <div class="step-label">Data Santri</div>
+    </div>
+    <div class="step" id="pstep-2">
+      <div class="step-num">2</div>
+      <div class="step-label">Data Orang Tua</div>
+    </div>
+    <div class="step" id="pstep-3">
+      <div class="step-num">3</div>
+      <div class="step-label">Konfirmasi</div>
+    </div>
+  </div>
+</div>
+
+<!-- FORM -->
+<div class="form-wrapper">
+
+  <!-- STEP 1: Data Santri -->
+  <div class="step-panel active" id="panel-1">
+    <div class="form-card">
+      <div class="form-card-header">
+        <div class="form-card-icon">👶</div>
+        <div>
+          <div class="form-card-title">Data Pribadi Santri</div>
+          <div class="form-card-sub">Isi data diri calon santri dengan lengkap dan benar</div>
+        </div>
+      </div>
+      <div class="form-card-body">
+        <div class="form-grid">
+
+          <!-- Foto -->
+          <div class="form-group full">
+            <label>Foto Santri <span class="req">*</span></label>
+            <div class="photo-area" id="photoArea">
+              <input type="file" id="photoInput" accept="image/*" onchange="handlePhoto(event)">
+              <div id="photoWrap">
+                <div class="photo-placeholder">📷</div>
+                <div class="photo-hint">Ketuk untuk upload foto santri<br><small style="color:#aaa;">Format JPG/PNG, maksimal 2MB</small></div>
+              </div>
+            </div>
+            <input type="hidden" id="f-photo">
+            <div class="field-error" id="err-photo">Foto santri wajib diupload</div>
+          </div>
+
+          <div class="form-group">
+            <label>Nama Lengkap <span class="req">*</span></label>
+            <input type="text" id="f-nama" placeholder="Nama lengkap santri">
+            <div class="field-error" id="err-nama">Nama wajib diisi</div>
+          </div>
+
+          <div class="form-group">
+            <label>Jenis Kelamin <span class="req">*</span></label>
+            <select id="f-jk">
+              <option value="">-- Pilih --</option>
+              <option value="Laki-laki">Laki-laki</option>
+              <option value="Perempuan">Perempuan</option>
+            </select>
+            <div class="field-error" id="err-jk">Jenis kelamin wajib dipilih</div>
+          </div>
+
+          <div class="form-group">
+            <label>NIK (No. Induk Kependudukan)</label>
+            <input type="text" id="f-nik" placeholder="16 digit NIK" maxlength="16">
+          </div>
+
+          <div class="form-group">
+            <label>No. Kartu Keluarga (KK)</label>
+            <input type="text" id="f-kk" placeholder="16 digit No. KK" maxlength="16">
+          </div>
+
+          <div class="form-group">
+            <label>Tempat Lahir <span class="req">*</span></label>
+            <input type="text" id="f-tempatlahir" placeholder="Kota/Desa tempat lahir">
+            <div class="field-error" id="err-tempatlahir">Tempat lahir wajib diisi</div>
+          </div>
+
+          <div class="form-group">
+            <label>Tanggal Lahir <span class="req">*</span></label>
+            <input type="date" id="f-tgl">
+            <div class="field-error" id="err-tgl">Tanggal lahir wajib diisi</div>
+          </div>
+
+          <div class="form-group">
+            <label>Kelas / Tingkat <span class="req">*</span></label>
+            <select id="f-kelas">
+              <option value="">-- Pilih Kelas --</option>
+              <option value="Iqro 1">Iqro 1</option>
+              <option value="Iqro 2">Iqro 2</option>
+              <option value="Iqro 3">Iqro 3</option>
+              <option value="Iqro 4">Iqro 4</option>
+              <option value="Iqro 5">Iqro 5</option>
+              <option value="Iqro 6">Iqro 6</option>
+              <option value="Al-Quran">Al-Quran</option>
+              <option value="Tahfizh">Tahfizh</option>
+            </select>
+            <div class="field-error" id="err-kelas">Kelas wajib dipilih</div>
+          </div>
+
+          <div class="form-group full">
+            <label>Alamat Lengkap <span class="req">*</span></label>
+            <textarea id="f-alamat" placeholder="Nama jalan, RT/RW, dusun, kelurahan, kecamatan..."></textarea>
+            <div class="field-error" id="err-alamat">Alamat wajib diisi</div>
+          </div>
+
+        </div>
+      </div>
+      <div class="form-nav">
+        <div></div>
+        <button class="btn btn-primary" onclick="goStep(2)">Selanjutnya →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 2: Data Orang Tua -->
+  <div class="step-panel" id="panel-2">
+    <div class="form-card">
+      <div class="form-card-header">
+        <div class="form-card-icon">👨‍👩‍👧</div>
+        <div>
+          <div class="form-card-title">Data Orang Tua / Wali</div>
+          <div class="form-card-sub">Informasi orang tua atau wali yang bertanggung jawab</div>
+        </div>
+      </div>
+      <div class="form-card-body">
+        <div class="form-grid">
+
+          <div class="form-group">
+            <label>Nama Ayah <span class="req">*</span></label>
+            <input type="text" id="f-ayah" placeholder="Nama lengkap ayah kandung">
+            <div class="field-error" id="err-ayah">Nama ayah wajib diisi</div>
+          </div>
+
+          <div class="form-group">
+            <label>Nama Ibu <span class="req">*</span></label>
+            <input type="text" id="f-ibu" placeholder="Nama lengkap ibu kandung">
+            <div class="field-error" id="err-ibu">Nama ibu wajib diisi</div>
+          </div>
+
+          <div class="form-group">
+            <label>No. Telepon / WhatsApp <span class="req">*</span></label>
+            <input type="tel" id="f-telp" placeholder="08xxxxxxxxxx">
+            <div class="field-error" id="err-telp">No. telepon wajib diisi</div>
+          </div>
+
+          <div class="form-group">
+            <label>Pekerjaan Ayah</label>
+            <input type="text" id="f-pekayah" placeholder="Contoh: Petani, Wiraswasta, dll">
+          </div>
+
+          <div class="form-group">
+            <label>Pekerjaan Ibu</label>
+            <input type="text" id="f-pekibu" placeholder="Contoh: Ibu Rumah Tangga, dll">
+          </div>
+
+          <div class="form-group">
+            <label>Email (opsional)</label>
+            <input type="email" id="f-email" placeholder="email@contoh.com">
+          </div>
+
+          <div class="form-group full">
+            <label>Catatan / Pesan untuk Admin</label>
+            <textarea id="f-catatan" placeholder="Catatan tambahan, kondisi khusus santri, dsb. (opsional)" style="min-height:70px;"></textarea>
+          </div>
+
+        </div>
+      </div>
+      <div class="form-nav">
+        <button class="btn btn-secondary" onclick="goStep(1)">← Kembali</button>
+        <button class="btn btn-primary" onclick="goStep(3)">Selanjutnya →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 3: Review & Submit -->
+  <div class="step-panel" id="panel-3">
+    <div class="form-card">
+      <div class="form-card-header">
+        <div class="form-card-icon">✅</div>
+        <div>
+          <div class="form-card-title">Konfirmasi Pendaftaran</div>
+          <div class="form-card-sub">Periksa kembali data sebelum mengirim</div>
+        </div>
+      </div>
+      <div class="form-card-body" id="review-body">
+        <!-- filled by JS -->
+      </div>
+      <div class="form-nav">
+        <button class="btn btn-secondary" onclick="goStep(2)">← Kembali</button>
+        <button class="btn btn-submit" onclick="submitForm()">🕌 Kirim Pendaftaran</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SUCCESS -->
+  <div class="form-card" id="success-card" style="display:none;">
+    <div class="success-screen show">
+      <div class="success-icon">🎉</div>
+      <div class="success-title">Pendaftaran Berhasil!</div>
+      <div class="success-sub">Alhamdulillah, data pendaftaran santri Anda telah berhasil dikirimkan. Harap menunggu konfirmasi dari pihak TPA.</div>
+      <div class="receipt-box" id="receipt-box"></div>
+      <div class="info-box">
+        <span>📞</span>
+        <span>Untuk informasi lebih lanjut, silakan hubungi pengurus TPA Surau Balai Diateh Situmbuk. Nomor pendaftaran Anda tercantum di atas.</span>
+      </div>
+      <button class="btn btn-primary" style="margin-top:20px;" onclick="daftarLagi()">➕ Daftarkan Santri Lain</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+let currentStep = 1;
+let photoData = '';
+
+// ── PHOTO ──────────────────────────────────────────────
+function handlePhoto(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  if (file.size > 2 * 1024 * 1024) { alert('Foto terlalu besar, maksimal 2MB.'); return; }
+  const reader = new FileReader();
+  reader.onload = ev => {
+    photoData = ev.target.result;
+    document.getElementById('f-photo').value = photoData;
+    document.getElementById('photoWrap').innerHTML =
+      `<img src="${photoData}" class="photo-preview" alt="Foto">
+       <div class="photo-hint">Ketuk untuk ganti foto</div>`;
+    document.getElementById('err-photo').classList.remove('show');
+  };
+  reader.readAsDataURL(file);
+}
+
+// ── STEP NAVIGATION ────────────────────────────────────
+function goStep(to) {
+  if (to > currentStep && !validateStep(currentStep)) return;
+  document.getElementById('panel-' + currentStep).classList.remove('active');
+  document.getElementById('pstep-' + currentStep).classList.remove('active');
+  if (to > currentStep) document.getElementById('pstep-' + currentStep).classList.add('done');
+  currentStep = to;
+  document.getElementById('panel-' + currentStep).classList.add('active');
+  document.getElementById('pstep-' + currentStep).classList.add('active');
+  if (to === 3) buildReview();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ── VALIDATION ─────────────────────────────────────────
+function validateStep(step) {
+  let ok = true;
+  if (step === 1) {
+    ok = checkField('f-nama', 'err-nama') && ok;
+    ok = checkField('f-jk', 'err-jk') && ok;
+    ok = checkField('f-tempatlahir', 'err-tempatlahir') && ok;
+    ok = checkField('f-tgl', 'err-tgl') && ok;
+    ok = checkField('f-kelas', 'err-kelas') && ok;
+    ok = checkField('f-alamat', 'err-alamat') && ok;
+    if (!photoData) {
+      document.getElementById('err-photo').classList.add('show');
+      ok = false;
+    }
+  }
+  if (step === 2) {
+    ok = checkField('f-ayah', 'err-ayah') && ok;
+    ok = checkField('f-ibu', 'err-ibu') && ok;
+    ok = checkField('f-telp', 'err-telp') && ok;
+  }
+  if (!ok) window.scrollTo({ top: 0, behavior: 'smooth' });
+  return ok;
+}
+
+function checkField(id, errId) {
+  const el = document.getElementById(id);
+  const err = document.getElementById(errId);
+  if (!el.value.trim()) {
+    el.classList.add('error');
+    if (err) err.classList.add('show');
+    return false;
+  } else {
+    el.classList.remove('error');
+    if (err) err.classList.remove('show');
+    return true;
+  }
+}
+
+// ── BUILD REVIEW ───────────────────────────────────────
+function buildReview() {
+  const v = id => (document.getElementById(id)?.value || '').trim();
+  const photoEl = photoData
+    ? `<img src="${photoData}" class="review-photo">`
+    : `<div class="review-photo-placeholder">👤</div>`;
+
+  document.getElementById('review-body').innerHTML = `
+    <div class="review-photo-wrap">${photoEl}</div>
+
+    <div class="review-section">
+      <div class="review-label">📋 Data Santri</div>
+      <div class="review-grid">
+        <div class="review-item"><div class="review-key">Nama Lengkap</div><div class="review-val">${v('f-nama')}</div></div>
+        <div class="review-item"><div class="review-key">Jenis Kelamin</div><div class="review-val">${v('f-jk')}</div></div>
+        <div class="review-item"><div class="review-key">NIK</div><div class="review-val">${v('f-nik') || '-'}</div></div>
+        <div class="review-item"><div class="review-key">No. KK</div><div class="review-val">${v('f-kk') || '-'}</div></div>
+        <div class="review-item"><div class="review-key">Tempat Lahir</div><div class="review-val">${v('f-tempatlahir')}</div></div>
+        <div class="review-item"><div class="review-key">Tanggal Lahir</div><div class="review-val">${formatDate(v('f-tgl'))}</div></div>
+        <div class="review-item"><div class="review-key">Kelas</div><div class="review-val">${v('f-kelas')}</div></div>
+        <div class="review-item full"><div class="review-key">Alamat</div><div class="review-val">${v('f-alamat')}</div></div>
+      </div>
+    </div>
+
+    <div class="review-section">
+      <div class="review-label">👨‍👩‍👧 Data Orang Tua</div>
+      <div class="review-grid">
+        <div class="review-item"><div class="review-key">Nama Ayah</div><div class="review-val">${v('f-ayah')}</div></div>
+        <div class="review-item"><div class="review-key">Nama Ibu</div><div class="review-val">${v('f-ibu')}</div></div>
+        <div class="review-item"><div class="review-key">No. Telepon/WA</div><div class="review-val">${v('f-telp')}</div></div>
+        <div class="review-item"><div class="review-key">Pekerjaan Ayah</div><div class="review-val">${v('f-pekayah') || '-'}</div></div>
+        <div class="review-item"><div class="review-key">Pekerjaan Ibu</div><div class="review-val">${v('f-pekibu') || '-'}</div></div>
+        <div class="review-item"><div class="review-key">Email</div><div class="review-val">${v('f-email') || '-'}</div></div>
+        ${v('f-catatan') ? `<div class="review-item full"><div class="review-key">Catatan</div><div class="review-val">${v('f-catatan')}</div></div>` : ''}
+      </div>
+    </div>
+
+    <div class="terms-box">
+      <h4>📜 Ketentuan Pendaftaran</h4>
+      <ul>
+        <li>Data yang diisi adalah data yang benar dan dapat dipertanggungjawabkan.</li>
+        <li>Santri bersedia mengikuti tata tertib dan peraturan TPA Surau Balai Diateh Situmbuk.</li>
+        <li>Orang tua/wali bersedia mendukung proses belajar mengajar anak di rumah.</li>
+        <li>Pihak TPA berhak menolak pendaftaran apabila data tidak valid.</li>
+        <li>Data pribadi hanya digunakan untuk keperluan administrasi TPA.</li>
+      </ul>
+    </div>
+    <div class="checkbox-group">
+      <input type="checkbox" id="agreeCheck">
+      <label for="agreeCheck">Saya menyatakan bahwa data yang diisi adalah benar, dan saya menyetujui ketentuan pendaftaran di atas.</label>
+    </div>
+    <div class="field-error" id="err-agree" style="margin-top:6px;">Anda harus menyetujui ketentuan terlebih dahulu</div>
+  `;
+}
+
+// ── SUBMIT ─────────────────────────────────────────────
+function submitForm() {
+  const agree = document.getElementById('agreeCheck');
+  if (!agree || !agree.checked) {
+    document.getElementById('err-agree').classList.add('show');
+    return;
+  }
+  document.getElementById('err-agree').classList.remove('show');
+
+  const v = id => (document.getElementById(id)?.value || '').trim();
+  const noReg = 'REG' + Date.now().toString().slice(-8);
+  const tglDaftar = new Date().toISOString().split('T')[0];
+
+  const data = {
+    action: 'add',
+    noReg,
+    nis: '',
+    nik: v('f-nik'),
+    noKK: v('f-kk'),
+    nama: v('f-nama'),
+    jk: v('f-jk'),
+    tempatLahir: v('f-tempatlahir'),
+    tglLahir: v('f-tgl'),
+    kelas: v('f-kelas'),
+    status: 'Pending',
+    tahunMasuk: new Date().getFullYear(),
+    ayah: v('f-ayah'),
+    ibu: v('f-ibu'),
+    pekAyah: v('f-pekayah'),
+    pekIbu: v('f-pekibu'),
+    telp: v('f-telp'),
+    email: v('f-email'),
+    alamat: v('f-alamat'),
+    catatan: v('f-catatan'),
+    photo: photoData,
+    tglDaftar
+  };
+
+  // Save pending to localStorage (admin will pick up)
+  const pending = JSON.parse(localStorage.getItem('tpa_pending') || '[]');
+  pending.push({...data, id: Date.now().toString()});
+  localStorage.setItem('tpa_pending', JSON.stringify(pending));
+
+  // Tidak kirim langsung ke GAS — admin yang akan kirim saat menerima pendaftaran
+
+  // Show receipt
+  document.getElementById('panel-3').style.display = 'none';
+  document.getElementById('success-card').style.display = 'block';
+  document.getElementById('receipt-box').innerHTML = `
+    <div class="receipt-row"><span class="receipt-key">No. Pendaftaran</span><span class="receipt-val">${noReg}</span></div>
+    <div class="receipt-row"><span class="receipt-key">Nama Santri</span><span class="receipt-val">${v('f-nama')}</span></div>
+    <div class="receipt-row"><span class="receipt-key">Kelas</span><span class="receipt-val">${v('f-kelas')}</span></div>
+    <div class="receipt-row"><span class="receipt-key">Tanggal Daftar</span><span class="receipt-val">${formatDate(tglDaftar)}</span></div>
+    <div class="receipt-row"><span class="receipt-key">Status</span><span class="receipt-val">⏳ Menunggu Verifikasi</span></div>
+  `;
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function daftarLagi() {
+  location.reload();
+}
+
+function formatDate(d) {
+  if (!d) return '-';
+  try { return new Date(d).toLocaleDateString('id-ID', { day:'2-digit', month:'long', year:'numeric' }); }
+  catch { return d; }
+}
+</script>
+</body>
+</html>
