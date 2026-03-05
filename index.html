@@ -477,75 +477,39 @@
       <button class="btn btn-primary" style="margin-top:20px;" onclick="daftarLagi()">➕ Daftarkan Santri Lain</button>
     </div>
   </div>
-        <button class="btn btn-secondary" onclick="goStep(2)">← Kembali</button>
-        <button class="btn btn-submit" id="submitBtn" onclick="submitForm()">🕌 Kirim Pendaftaran</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- SUCCESS -->
-  <div class="form-card" id="success-card" style="display:none;">
-    <div class="success-screen show">
-      <div class="success-icon">🎉</div>
-      <div class="success-title">Pendaftaran Berhasil!</div>
-      <div class="success-sub">Alhamdulillah, data pendaftaran santri Anda telah berhasil dikirimkan. Harap menunggu konfirmasi dari pihak TPA.</div>
-      <div class="receipt-box" id="receipt-box"></div>
-      <div class="info-box">
-        <span>📞</span>
-        <span>Untuk informasi lebih lanjut, silakan hubungi pengurus TPA Surau Balai Diateh Situmbuk. Nomor pendaftaran Anda tercantum di atas.</span>
-      </div>
-      <button class="btn btn-primary" style="margin-top:20px;" onclick="daftarLagi()">➕ Daftarkan Santri Lain</button>
-    </div>
-  </div>
-
-  <!-- ERROR CARD -->
-  <div class="form-card" id="error-card" style="display:none;">
-    <div class="success-screen show">
-      <div class="success-icon">⚠️</div>
-      <div class="success-title" style="color:#e53e3e;">Gagal Mengirim</div>
-      <div class="success-sub">URL Google Apps Script belum dikonfigurasi atau tidak dapat dijangkau. Hubungi admin TPA untuk mengisi URL GAS yang benar.</div>
-      <button class="btn btn-secondary" style="margin-top:20px;" onclick="location.reload()">↩ Coba Lagi</button>
-    </div>
-  </div>
 
 </div>
 
-<!-- GAS URL Config (bisa disembunyikan / diisi di sini oleh admin) -->
-<div id="gas-config-bar" style="position:fixed;bottom:0;left:0;right:0;background:#1a1a1a;color:#fff;padding:10px 20px;font-size:0.78rem;display:flex;gap:10px;align-items:center;z-index:9999;box-shadow:0 -2px 16px rgba(0,0,0,0.3);">
+<!-- GAS URL Config Bar -->
+<div id="gas-config-bar" style="position:fixed;bottom:0;left:0;right:0;background:#1a1a1a;color:#fff;padding:10px 20px;font-size:0.78rem;display:none;gap:10px;align-items:center;z-index:9999;box-shadow:0 -2px 16px rgba(0,0,0,0.3);">
   <span style="white-space:nowrap;color:#c49a2a;font-weight:700;">⚙️ GAS URL:</span>
-  <input type="text" id="gasUrlInput" placeholder="https://script.google.com/macros/s/XXXX/exec" 
+  <input type="text" id="gasUrlInput" placeholder="https://script.google.com/macros/s/XXXX/exec"
     style="flex:1;padding:6px 10px;border-radius:6px;border:none;font-size:0.78rem;background:#333;color:#fff;outline:none;">
   <button onclick="saveGasUrl()" style="background:#0d5c3a;color:#fff;border:none;padding:6px 14px;border-radius:6px;cursor:pointer;font-size:0.78rem;white-space:nowrap;">💾 Simpan</button>
   <button onclick="hideGasBar()" style="background:#555;color:#fff;border:none;padding:6px 10px;border-radius:6px;cursor:pointer;font-size:0.78rem;">✕</button>
 </div>
 
 <script>
-// ── GAS URL MANAGEMENT ─────────────────────────────────
+// ── GAS URL ────────────────────────────────────────────
 const GAS_URL_KEY = 'tpa_gas_url';
 
 function getGasUrl() {
-  return sessionStorage.getItem(GAS_URL_KEY) || '';
+  return localStorage.getItem(GAS_URL_KEY) || '';
 }
-
 function saveGasUrl() {
   const url = document.getElementById('gasUrlInput').value.trim();
-  if (!url) { alert('Masukkan URL GAS terlebih dahulu!'); return; }
-  sessionStorage.setItem(GAS_URL_KEY, url);
-  alert('URL GAS disimpan untuk sesi ini ✅');
+  if (!url) { alert('Masukkan URL GAS!'); return; }
+  localStorage.setItem(GAS_URL_KEY, url);
+  document.getElementById('gas-config-bar').style.display = 'none';
+  alert('URL GAS disimpan ✅');
 }
-
 function hideGasBar() {
   document.getElementById('gas-config-bar').style.display = 'none';
 }
 
-// Load saved URL on init
 window.addEventListener('load', () => {
   const saved = getGasUrl();
-  if (saved) {
-    document.getElementById('gasUrlInput').value = saved;
-    // Hide bar if URL already configured
-    document.getElementById('gas-config-bar').style.display = 'none';
-  }
+  if (saved) document.getElementById('gasUrlInput').value = saved;
 });
 
 // ── PHOTO ──────────────────────────────────────────────
@@ -559,7 +523,6 @@ function handlePhoto(e) {
   const reader = new FileReader();
   reader.onload = ev => {
     photoData = ev.target.result;
-    document.getElementById('f-photo').value = photoData;
     document.getElementById('photoWrap').innerHTML =
       `<img src="${photoData}" class="photo-preview" alt="Foto">
        <div class="photo-hint">Ketuk untuk ganti foto</div>`;
@@ -581,7 +544,7 @@ function goStep(to) {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-// ── VALIDATION ─────────────────────────────────────────
+// ── VALIDASI ───────────────────────────────────────────
 function validateStep(step) {
   let ok = true;
   if (step === 1) {
@@ -612,14 +575,13 @@ function checkField(id, errId) {
     el.classList.add('error');
     if (err) err.classList.add('show');
     return false;
-  } else {
-    el.classList.remove('error');
-    if (err) err.classList.remove('show');
-    return true;
   }
+  el.classList.remove('error');
+  if (err) err.classList.remove('show');
+  return true;
 }
 
-// ── BUILD REVIEW ───────────────────────────────────────
+// ── REVIEW ─────────────────────────────────────────────
 function buildReview() {
   const v = id => (document.getElementById(id)?.value || '').trim();
   const photoEl = photoData
@@ -682,11 +644,15 @@ async function submitForm() {
 
   const gasUrl = getGasUrl();
   if (!gasUrl) {
-    // Show GAS bar if not configured
-    document.getElementById('gas-config-bar').style.display = 'flex';
-    alert('⚠️ URL Google Apps Script belum diisi!\nTampilkan bar konfigurasi di bawah layar dan masukkan URL GAS Anda.');
+    const bar = document.getElementById('gas-config-bar');
+    bar.style.display = 'flex';
+    alert('⚠️ URL Google Apps Script belum diisi!\nMasukkan URL GAS pada bar yang muncul di bawah layar.');
     return;
   }
+
+  const btn = document.querySelector('.btn-submit');
+  btn.disabled = true;
+  btn.innerHTML = '⏳ Mengirim...';
 
   const v = id => (document.getElementById(id)?.value || '').trim();
   const noReg = 'REG' + Date.now().toString().slice(-8);
@@ -716,29 +682,27 @@ async function submitForm() {
     tglDaftar
   };
 
-  // Loading state
-  const btn = document.getElementById('submitBtn');
-  btn.disabled = true;
-  btn.textContent = '⏳ Mengirim...';
-
   try {
     await fetch(gasUrl, {
       method: 'POST',
-      mode: 'no-cors', // GAS requires no-cors from browser
+      mode: 'no-cors',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data)
     });
-    // no-cors returns opaque response, assume success if no throw
+    // no-cors = opaque response, anggap sukses jika tidak throw
     showSuccess(noReg, v('f-nama'), v('f-kelas'), tglDaftar);
   } catch (err) {
     btn.disabled = false;
-    btn.textContent = '🕌 Kirim Pendaftaran';
-    alert('Gagal mengirim data. Periksa koneksi internet dan URL GAS Anda.\n\nError: ' + err.message);
+    btn.innerHTML = '🕌 Kirim Pendaftaran';
+    alert('Gagal mengirim. Periksa koneksi internet Anda.\n\nError: ' + err.message);
   }
 }
 
 function showSuccess(noReg, nama, kelas, tglDaftar) {
+  // Sembunyikan step 3
+  document.getElementById('panel-3').classList.remove('active');
   document.getElementById('panel-3').style.display = 'none';
+  // Tampilkan success card
   document.getElementById('success-card').style.display = 'block';
   document.getElementById('receipt-box').innerHTML = `
     <div class="receipt-row"><span class="receipt-key">No. Pendaftaran</span><span class="receipt-val">${noReg}</span></div>
@@ -750,9 +714,7 @@ function showSuccess(noReg, nama, kelas, tglDaftar) {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-function daftarLagi() {
-  location.reload();
-}
+function daftarLagi() { location.reload(); }
 
 function formatDate(d) {
   if (!d) return '-';
