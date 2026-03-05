@@ -477,14 +477,81 @@
       <button class="btn btn-primary" style="margin-top:20px;" onclick="daftarLagi()">➕ Daftarkan Santri Lain</button>
     </div>
   </div>
+        <button class="btn btn-secondary" onclick="goStep(2)">← Kembali</button>
+        <button class="btn btn-submit" id="submitBtn" onclick="submitForm()">🕌 Kirim Pendaftaran</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SUCCESS -->
+  <div class="form-card" id="success-card" style="display:none;">
+    <div class="success-screen show">
+      <div class="success-icon">🎉</div>
+      <div class="success-title">Pendaftaran Berhasil!</div>
+      <div class="success-sub">Alhamdulillah, data pendaftaran santri Anda telah berhasil dikirimkan. Harap menunggu konfirmasi dari pihak TPA.</div>
+      <div class="receipt-box" id="receipt-box"></div>
+      <div class="info-box">
+        <span>📞</span>
+        <span>Untuk informasi lebih lanjut, silakan hubungi pengurus TPA Surau Balai Diateh Situmbuk. Nomor pendaftaran Anda tercantum di atas.</span>
+      </div>
+      <button class="btn btn-primary" style="margin-top:20px;" onclick="daftarLagi()">➕ Daftarkan Santri Lain</button>
+    </div>
+  </div>
+
+  <!-- ERROR CARD -->
+  <div class="form-card" id="error-card" style="display:none;">
+    <div class="success-screen show">
+      <div class="success-icon">⚠️</div>
+      <div class="success-title" style="color:#e53e3e;">Gagal Mengirim</div>
+      <div class="success-sub">URL Google Apps Script belum dikonfigurasi atau tidak dapat dijangkau. Hubungi admin TPA untuk mengisi URL GAS yang benar.</div>
+      <button class="btn btn-secondary" style="margin-top:20px;" onclick="location.reload()">↩ Coba Lagi</button>
+    </div>
+  </div>
 
 </div>
 
+<!-- GAS URL Config (bisa disembunyikan / diisi di sini oleh admin) -->
+<div id="gas-config-bar" style="position:fixed;bottom:0;left:0;right:0;background:#1a1a1a;color:#fff;padding:10px 20px;font-size:0.78rem;display:flex;gap:10px;align-items:center;z-index:9999;box-shadow:0 -2px 16px rgba(0,0,0,0.3);">
+  <span style="white-space:nowrap;color:#c49a2a;font-weight:700;">⚙️ GAS URL:</span>
+  <input type="text" id="gasUrlInput" placeholder="https://script.google.com/macros/s/XXXX/exec" 
+    style="flex:1;padding:6px 10px;border-radius:6px;border:none;font-size:0.78rem;background:#333;color:#fff;outline:none;">
+  <button onclick="saveGasUrl()" style="background:#0d5c3a;color:#fff;border:none;padding:6px 14px;border-radius:6px;cursor:pointer;font-size:0.78rem;white-space:nowrap;">💾 Simpan</button>
+  <button onclick="hideGasBar()" style="background:#555;color:#fff;border:none;padding:6px 10px;border-radius:6px;cursor:pointer;font-size:0.78rem;">✕</button>
+</div>
+
 <script>
+// ── GAS URL MANAGEMENT ─────────────────────────────────
+const GAS_URL_KEY = 'tpa_gas_url';
+
+function getGasUrl() {
+  return sessionStorage.getItem(GAS_URL_KEY) || '';
+}
+
+function saveGasUrl() {
+  const url = document.getElementById('gasUrlInput').value.trim();
+  if (!url) { alert('Masukkan URL GAS terlebih dahulu!'); return; }
+  sessionStorage.setItem(GAS_URL_KEY, url);
+  alert('URL GAS disimpan untuk sesi ini ✅');
+}
+
+function hideGasBar() {
+  document.getElementById('gas-config-bar').style.display = 'none';
+}
+
+// Load saved URL on init
+window.addEventListener('load', () => {
+  const saved = getGasUrl();
+  if (saved) {
+    document.getElementById('gasUrlInput').value = saved;
+    // Hide bar if URL already configured
+    document.getElementById('gas-config-bar').style.display = 'none';
+  }
+});
+
+// ── PHOTO ──────────────────────────────────────────────
 let currentStep = 1;
 let photoData = '';
 
-// ── PHOTO ──────────────────────────────────────────────
 function handlePhoto(e) {
   const file = e.target.files[0];
   if (!file) return;
@@ -561,7 +628,6 @@ function buildReview() {
 
   document.getElementById('review-body').innerHTML = `
     <div class="review-photo-wrap">${photoEl}</div>
-
     <div class="review-section">
       <div class="review-label">📋 Data Santri</div>
       <div class="review-grid">
@@ -575,7 +641,6 @@ function buildReview() {
         <div class="review-item full"><div class="review-key">Alamat</div><div class="review-val">${v('f-alamat')}</div></div>
       </div>
     </div>
-
     <div class="review-section">
       <div class="review-label">👨‍👩‍👧 Data Orang Tua</div>
       <div class="review-grid">
@@ -588,7 +653,6 @@ function buildReview() {
         ${v('f-catatan') ? `<div class="review-item full"><div class="review-key">Catatan</div><div class="review-val">${v('f-catatan')}</div></div>` : ''}
       </div>
     </div>
-
     <div class="terms-box">
       <h4>📜 Ketentuan Pendaftaran</h4>
       <ul>
@@ -607,8 +671,8 @@ function buildReview() {
   `;
 }
 
-// ── SUBMIT ─────────────────────────────────────────────
-function submitForm() {
+// ── SUBMIT — kirim langsung ke GAS ─────────────────────
+async function submitForm() {
   const agree = document.getElementById('agreeCheck');
   if (!agree || !agree.checked) {
     document.getElementById('err-agree').classList.add('show');
@@ -616,14 +680,21 @@ function submitForm() {
   }
   document.getElementById('err-agree').classList.remove('show');
 
+  const gasUrl = getGasUrl();
+  if (!gasUrl) {
+    // Show GAS bar if not configured
+    document.getElementById('gas-config-bar').style.display = 'flex';
+    alert('⚠️ URL Google Apps Script belum diisi!\nTampilkan bar konfigurasi di bawah layar dan masukkan URL GAS Anda.');
+    return;
+  }
+
   const v = id => (document.getElementById(id)?.value || '').trim();
   const noReg = 'REG' + Date.now().toString().slice(-8);
   const tglDaftar = new Date().toISOString().split('T')[0];
 
   const data = {
-    action: 'add',
+    action: 'pending',
     noReg,
-    nis: '',
     nik: v('f-nik'),
     noKK: v('f-kk'),
     nama: v('f-nama'),
@@ -645,20 +716,34 @@ function submitForm() {
     tglDaftar
   };
 
-  // Save pending to localStorage (admin will pick up)
-  const pending = JSON.parse(localStorage.getItem('tpa_pending') || '[]');
-  pending.push({...data, id: Date.now().toString()});
-  localStorage.setItem('tpa_pending', JSON.stringify(pending));
+  // Loading state
+  const btn = document.getElementById('submitBtn');
+  btn.disabled = true;
+  btn.textContent = '⏳ Mengirim...';
 
-  // Tidak kirim langsung ke GAS — admin yang akan kirim saat menerima pendaftaran
+  try {
+    await fetch(gasUrl, {
+      method: 'POST',
+      mode: 'no-cors', // GAS requires no-cors from browser
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+    // no-cors returns opaque response, assume success if no throw
+    showSuccess(noReg, v('f-nama'), v('f-kelas'), tglDaftar);
+  } catch (err) {
+    btn.disabled = false;
+    btn.textContent = '🕌 Kirim Pendaftaran';
+    alert('Gagal mengirim data. Periksa koneksi internet dan URL GAS Anda.\n\nError: ' + err.message);
+  }
+}
 
-  // Show receipt
+function showSuccess(noReg, nama, kelas, tglDaftar) {
   document.getElementById('panel-3').style.display = 'none';
   document.getElementById('success-card').style.display = 'block';
   document.getElementById('receipt-box').innerHTML = `
     <div class="receipt-row"><span class="receipt-key">No. Pendaftaran</span><span class="receipt-val">${noReg}</span></div>
-    <div class="receipt-row"><span class="receipt-key">Nama Santri</span><span class="receipt-val">${v('f-nama')}</span></div>
-    <div class="receipt-row"><span class="receipt-key">Kelas</span><span class="receipt-val">${v('f-kelas')}</span></div>
+    <div class="receipt-row"><span class="receipt-key">Nama Santri</span><span class="receipt-val">${nama}</span></div>
+    <div class="receipt-row"><span class="receipt-key">Kelas</span><span class="receipt-val">${kelas}</span></div>
     <div class="receipt-row"><span class="receipt-key">Tanggal Daftar</span><span class="receipt-val">${formatDate(tglDaftar)}</span></div>
     <div class="receipt-row"><span class="receipt-key">Status</span><span class="receipt-val">⏳ Menunggu Verifikasi</span></div>
   `;
